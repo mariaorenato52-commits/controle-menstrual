@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <!-- Bloqueia qualquer conexão externa: só recursos deste próprio app. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; form-action 'none'; base-uri 'none'">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fbf7f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#151418" media="(prefers-color-scheme: dark)">
+  <title>Diário</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <main id="login-gate" class="login-gate" aria-labelledby="login-titulo">
+    <section class="login-card">
+      <span class="login-marca" aria-hidden="true">◉</span>
+      <h1 id="login-titulo">Diário privado</h1>
+      <p>Entre com o e-mail e a senha da conta administradora.</p>
+      <form id="login-form" class="login-form">
+        <label for="login-email">E-mail</label>
+        <input id="login-email" name="email" type="email" autocomplete="username" required>
+        <label for="login-password">Senha</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+        <button id="login-submit" class="botao botao-primario botao-bloco" type="submit" disabled>Entrar</button>
+      </form>
+      <p id="login-status" class="login-status" role="status" aria-live="polite">Verificando a configuração de acesso…</p>
+    </section>
+  </main>
+
+  <!-- Navegação fixa inferior -->
+  <nav id="app-abas" class="abas" aria-label="Principal" hidden>
+    <span class="abas-marca" aria-hidden="true">Diário</span>
+    <a href="#/" data-rota="inicio" class="aba">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg>
+      <span>Hoje</span>
+    </a>
+    <a href="#/lista" data-rota="lista" class="aba">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5h14M5 12h14M5 19h9"/></svg>
+      <span>Anotações</span>
+    </a>
+    <a href="#/calendario" data-rota="calendario" class="aba">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M4 9.5h16M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/></svg>
+      <span>Calendário</span>
+    </a>
+    <a href="#/analise" data-rota="analise" class="aba">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 16v-5m4 5V7m4 9v-8m4 8V4"/><path d="m7 8 4-3 4 2 5-4"/></svg>
+      <span>Análise</span>
+    </a>
+    <a href="#/nova" data-rota="form" class="aba aba-mais" aria-label="Nova anotação">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span class="so-desktop">Nova anotação</span>
+    </a>
+    <a href="#/dados" data-rota="dados" class="aba">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z"/></svg>
+      <span>Dados</span>
+    </a>
+  </nav>
+
+  <div id="app-palco" class="palco" hidden>
+    <div id="aviso-armazenamento" class="faixa faixa-erro" role="alert" hidden></div>
+
+    <main id="conteudo" tabindex="-1">
+
+      <!-- ============ HOJE ============ -->
+      <section id="view-inicio" class="view" aria-labelledby="t-inicio" hidden>
+        <header class="hero">
+          <div class="hero-cabecalho">
+            <span class="hero-espaco" aria-hidden="true"></span>
+            <div>
+              <p class="hero-sobre" id="hero-dia-semana"></p>
+              <h1 id="t-inicio" class="hero-titulo"></h1>
+            </div>
+            <a class="hero-menu" href="#/dados" aria-label="Abrir dados e privacidade">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </a>
+          </div>
+          <p class="hero-sub" id="resumo-inicio"></p>
+        </header>
+
+        <div class="faixa-destaque">
+          <p>Um espaço para registrar com cuidado e atenção.</p>
+          <a href="#/dados">Privacidade <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="modo-manual"><span class="modo-ponto" aria-hidden="true"></span> Modo: diário manual</div>
+
+        <div id="hoje-cta" class="cta-hoje" hidden>
+          <div class="cta-icone" aria-hidden="true">✎</div>
+          <div>
+            <h2>Nada anotado hoje</h2>
+            <p>Humor, energia, sintomas ou algo que ela contou.</p>
+          </div>
+          <a class="botao botao-primario" href="#/nova">Registrar hoje</a>
+        </div>
+
+        <div id="vazio-inicio" class="vazio" hidden>
+          <div class="anel-diario">
+            <svg class="gota-diario" aria-hidden="true" viewBox="0 0 40 60"><path d="M20 2C16 15 3 28 3 40a17 17 0 0 0 34 0C37 28 24 15 20 2Z"/></svg>
+            <div class="anel-conteudo">
+              <h2>Seu diário começa aqui</h2>
+              <p>Anote algo que ela contou ou uma observação sua.</p>
+              <a class="botao botao-primario" href="#/nova">Adicionar anotação <span aria-hidden="true">＋</span></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="secao-titulo" id="titulo-recentes">
+          <h2>Recentes</h2>
+          <a href="#/lista" id="ver-todas" hidden>Ver todas</a>
+        </div>
+        <ol id="lista-inicio" class="cartoes" aria-labelledby="titulo-recentes"></ol>
+      </section>
+
+      <!-- ============ CALENDÁRIO ============ -->
+      <section id="view-calendario" class="view" aria-labelledby="t-calendario" hidden>
+        <header class="topo-view calendario-topo">
+          <h1 id="t-calendario">Calendário</h1>
+          <p>Toque em um dia para ver as anotações salvas.</p>
+        </header>
+        <div class="cal-painel">
+          <div class="cal-navegacao">
+            <button type="button" id="cal-anterior" class="cal-seta" aria-label="Mês anterior">‹</button>
+            <h2 id="cal-mes-atual" aria-live="polite"></h2>
+            <button type="button" id="cal-proximo" class="cal-seta" aria-label="Próximo mês">›</button>
+          </div>
+          <div class="cal-semana" aria-hidden="true">
+            <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+          </div>
+          <div id="cal-grade" class="cal-grade" role="grid" aria-label="Dias do mês"></div>
+          <p class="cal-legenda"><span class="cal-indicador" aria-hidden="true"></span> Dia com anotação</p>
+        </div>
+        <section class="cal-detalhes" aria-labelledby="cal-dia-titulo">
+          <div class="cal-detalhes-cab">
+            <h2 id="cal-dia-titulo"></h2>
+            <a id="cal-nova" class="botao botao-primario botao-pequeno" href="#/nova">+ Anotar</a>
+          </div>
+          <p id="cal-contagem" class="sutil" role="status" aria-live="polite"></p>
+          <div id="cal-vazio" class="cal-vazio" hidden>
+            <p id="cal-vazio-texto"></p>
+          </div>
+          <ol id="cal-lista" class="cartoes" aria-label="Anotações do dia selecionado"></ol>
+        </section>
+      </section>
+
+      <!-- ============ ANÁLISE DESCRITIVA ============ -->
+      <section id="view-analise" class="view" aria-labelledby="t-analise" hidden>
+        <header class="topo-view analise-topo">
+          <h1 id="t-analise">Análise</h1>
+          <p>Resumo descritivo dos registros preenchidos manualmente.</p>
+        </header>
+        <section aria-labelledby="analise-ciclo-titulo">
+          <h2 id="analise-ciclo-titulo">Estatísticas do ciclo</h2>
+          <p class="analise-explica">Estimativas retrospectivas feitas apenas com as datas que você marcou como menstruação. Não são previsões.</p>
+          <div id="analise-estatisticas" class="analise-estatisticas"></div>
+        </section>
+        <section class="analise-bloco" aria-labelledby="analise-menstruacao-titulo">
+          <h2 id="analise-menstruacao-titulo">Sua menstruação</h2>
+          <div id="analise-menstruacao" class="analise-cartao"></div>
+        </section>
+        <section class="analise-bloco" aria-labelledby="analise-grafico-titulo">
+          <h2 id="analise-grafico-titulo">Registros ao longo do tempo</h2>
+          <div id="analise-grafico" class="analise-cartao"></div>
+        </section>
+        <section class="analise-bloco" aria-labelledby="analise-detalhes-titulo">
+          <h2 id="analise-detalhes-titulo">Em detalhes</h2>
+          <div id="analise-detalhes" class="analise-detalhes"></div>
+        </section>
+        <div class="analise-privacidade">Os resumos são calculados neste dispositivo. Não há conexão com dispositivos ou serviços de saúde.</div>
+      </section>
+
+      <!-- ============ LISTA / BUSCA ============ -->
+      <section id="view-lista" class="view" aria-labelledby="t-lista" hidden>
+        <header class="topo-view">
+          <h1 id="t-lista">Anotações</h1>
+        </header>
+
+        <form id="form-filtros" class="filtros" role="search" aria-label="Buscar e filtrar anotações">
+          <div class="busca">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>
+            <label for="f-busca" class="sr-only">Buscar no texto</label>
+            <input id="f-busca" name="busca" type="search" autocomplete="off" placeholder="Buscar nas anotações">
+          </div>
+          <details class="mais-filtros" id="mais-filtros">
+            <summary>Filtros <span class="contador-filtros" id="contador-filtros" hidden></span></summary>
+            <div class="grade-filtros">
+              <div class="campo">
+                <label for="f-de">De</label>
+                <input id="f-de" name="de" type="date">
+              </div>
+              <div class="campo">
+                <label for="f-ate">Até</label>
+                <input id="f-ate" name="ate" type="date">
+              </div>
+              <div class="campo">
+                <label for="f-humor">Humor</label>
+                <select id="f-humor" name="humor"><option value="">Todos</option></select>
+              </div>
+              <div class="campo">
+                <label for="f-sintoma">Sintoma</label>
+                <select id="f-sintoma" name="sintoma"><option value="">Todos</option></select>
+              </div>
+              <div class="campo">
+                <label for="f-origem">Origem</label>
+                <select id="f-origem" name="origem"><option value="">Todas</option></select>
+              </div>
+              <div class="campo campo-acao">
+                <button type="reset" class="botao botao-suave">Limpar filtros</button>
+              </div>
+            </div>
+          </details>
+        </form>
+
+        <p id="contagem-lista" class="sutil" role="status" aria-live="polite"></p>
+
+        <div id="vazio-lista" class="vazio" hidden>
+          <div class="vazio-icone" aria-hidden="true">🔍</div>
+          <h2 id="vazio-lista-titulo"></h2>
+          <p id="vazio-lista-texto"></p>
+        </div>
+
+        <ol id="lista-todas" class="cartoes" aria-label="Resultados"></ol>
+      </section>
+
+      <!-- ============ FORMULÁRIO ============ -->
+      <section id="view-form" class="view" aria-labelledby="t-form" hidden>
+        <form id="form-registro" class="formulario" novalidate>
+          <header class="topo-form">
+            <button type="button" class="botao-icone" id="btn-cancelar" aria-label="Cancelar e voltar">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+            <div class="topo-form-meio">
+              <h1 id="t-form">Nova anotação</h1>
+              <label for="r-data" class="sr-only">Data (obrigatório)</label>
+              <input id="r-data" name="data" type="date" required aria-describedby="e-data" class="data-pilula">
+            </div>
+            <span class="topo-form-respiro" aria-hidden="true"></span>
+          </header>
+          <p class="erro erro-centro" id="e-data"></p>
+          <div id="erro-geral" class="faixa faixa-erro" role="alert" hidden></div>
+
+          <fieldset class="categoria cat-origem">
+            <legend><span class="cat-icone" aria-hidden="true">💬</span> De onde veio <span class="obrigatorio">obrigatório</span></legend>
+            <div class="segmentado" id="r-origem-grupo">
+              <label>
+                <input type="radio" name="origem" value="ela_contou" required>
+                <span><strong>Ela me contou</strong><small>dito por ela</small></span>
+              </label>
+              <label>
+                <input type="radio" name="origem" value="minha_observacao">
+                <span><strong>Minha observação</strong><small>impressão minha</small></span>
+              </label>
+            </div>
+            <p class="erro" id="e-origem"></p>
+          </fieldset>
+
+          <fieldset class="categoria cat-humor">
+            <legend><span class="cat-icone" aria-hidden="true">☺</span> Humor</legend>
+            <div class="tiles" id="r-humor-grupo"></div>
+            <p class="erro" id="e-humor"></p>
+          </fieldset>
+
+          <fieldset class="categoria cat-energia">
+            <legend><span class="cat-icone" aria-hidden="true">⚡</span> Energia</legend>
+            <div class="tiles tiles-5" id="r-energia-grupo"></div>
+            <p class="erro" id="e-energia"></p>
+          </fieldset>
+
+          <fieldset class="categoria cat-menstruacao">
+            <legend><span class="cat-icone" aria-hidden="true">💧</span> Está menstruada?</legend>
+            <div class="tiles tiles-3" id="r-menstruacao-grupo"></div>
+            <p class="erro" id="e-menstruacao"></p>
+          </fieldset>
+
+          <fieldset class="categoria cat-sintomas">
+            <legend><span class="cat-icone" aria-hidden="true">✚</span> Sintomas</legend>
+            <div class="tiles" id="r-sintomas-grupo"></div>
+            <p class="erro" id="e-sintomas"></p>
+            <label for="r-sintomasOutros" class="rotulo-secundario">Outros sintomas</label>
+            <input id="r-sintomasOutros" name="sintomasOutros" type="text" maxlength="200" autocomplete="off"
+                   aria-describedby="e-sintomasOutros" placeholder="Opcional">
+            <p class="erro" id="e-sintomasOutros"></p>
+          </fieldset>
+
+          <div id="categorias-expandidas"></div>
+
+          <fieldset class="categoria categoria-extra">
+            <legend>Minhas etiquetas</legend>
+            <div class="etiqueta-criar">
+              <label class="sr-only" for="r-etiqueta">Nome da etiqueta</label>
+              <input id="r-etiqueta" type="text" maxlength="32" placeholder="Criar uma etiqueta" autocomplete="off">
+              <button id="btn-etiqueta" type="button" class="botao botao-suave">＋ Criar</button>
+            </div>
+            <div id="r-etiquetas" class="etiquetas-lista" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="categoria cat-contexto">
+            <label for="r-contexto" class="legenda"><span class="cat-icone" aria-hidden="true">☀</span> Contexto do dia</label>
+            <input id="r-contexto" name="contexto" type="text" maxlength="300" autocomplete="off"
+                   aria-describedby="e-contexto" placeholder="Ex.: semana de provas, viagem, dia corrido">
+            <p class="erro" id="e-contexto"></p>
+          </div>
+
+          <div class="categoria cat-obs">
+            <label for="r-observacoes" class="legenda"><span class="cat-icone" aria-hidden="true">✎</span> Nota diária</label>
+            <textarea id="r-observacoes" name="observacoes" rows="5" maxlength="3000"
+                      aria-describedby="c-observacoes e-observacoes"
+                      placeholder="Mais algum detalhe para adicionar neste dia?"></textarea>
+            <p class="dica"><span id="c-observacoes">0/3000</span></p>
+            <p class="erro" id="e-observacoes"></p>
+          </div>
+
+          <div class="acoes-form">
+            <button type="submit" class="botao botao-primario botao-bloco" id="btn-salvar">Salvar respostas deste dia</button>
+            <button type="button" class="botao botao-perigo-texto botao-bloco" id="btn-apagar-form" hidden>Apagar esta anotação</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ============ DADOS E PRIVACIDADE ============ -->
+      <section id="view-dados" class="view" aria-labelledby="t-dados" hidden>
+        <header class="topo-view">
+          <h1 id="t-dados">Dados e privacidade</h1>
+        </header>
+
+        <div class="painel">
+          <h2>Onde ficam os registros</h2>
+          <ul class="lista-texto">
+            <li>As anotações ficam salvas <strong>somente neste navegador, neste dispositivo</strong>
+                (armazenamento local do navegador, <code>localStorage</code>).</li>
+            <li>O login usa Supabase Auth. O e-mail e a senha são enviados ao Supabase para autenticação;
+                as anotações do diário não são enviadas a ele, a terceiros ou para armazenamento em nuvem.</li>
+            <li>O login libera a interface, mas não criptografa os registros locais. Como o app é estático,
+                alguém com acesso ao dispositivo ou que altere o código no navegador pode contornar essa tela.</li>
+            <li><strong>Os dados não são criptografados.</strong> Qualquer pessoa com acesso a este
+                navegador/usuário do computador ou do celular pode abrir o app e ler as anotações.
+                Use o bloqueio de tela do dispositivo.</li>
+            <li><strong>Os dados podem ser perdidos</strong> se você limpar os dados de navegação/do site,
+                usar janela anônima, desinstalar o navegador, trocar de dispositivo, ou se o navegador
+                liberar espaço automaticamente. Exporte um backup de vez em quando.</li>
+            <li>Outro navegador ou outro endereço (por exemplo, outra porta) enxerga um diário separado e vazio.</li>
+          </ul>
+          <p class="sutil" id="info-armazenamento" aria-live="polite"></p>
+        </div>
+
+        <div class="painel">
+          <h2>Acesso</h2>
+          <p id="conta-atual">Sessão ativa.</p>
+          <button type="button" id="btn-sair" class="botao botao-suave">Sair</button>
+        </div>
+
+        <div class="painel">
+          <h2>Exportar</h2>
+          <p>Baixa um arquivo <code>.json</code> com todas as anotações. O arquivo não é criptografado:
+             guarde-o em local seguro.</p>
+          <button type="button" class="botao botao-primario" id="btn-exportar">Exportar todas as anotações</button>
+        </div>
+
+        <div class="painel">
+          <h2>Importar backup</h2>
+          <p>Restaura um arquivo exportado por este app. As anotações atuais são mantidas; anotações
+             com o mesmo identificador são substituídas pela versão do arquivo.</p>
+          <label for="arquivo-importar" class="rotulo-secundario">Arquivo de backup (.json)</label>
+          <input type="file" id="arquivo-importar" accept="application/json,.json">
+        </div>
+
+        <div class="painel painel-perigo">
+          <h2>Apagar todos os registros</h2>
+          <p>Remove permanentemente todas as anotações deste dispositivo. Não é possível desfazer.
+             Exporte antes se quiser guardar uma cópia.</p>
+          <button type="button" class="botao botao-perigo" id="btn-apagar-tudo">Apagar todos os registros</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Diálogo de confirmação reutilizável -->
+  <dialog id="dialogo" aria-labelledby="dialogo-titulo" aria-describedby="dialogo-texto">
+    <form method="dialog" class="dialogo-corpo">
+      <h2 id="dialogo-titulo"></h2>
+      <p id="dialogo-texto"></p>
+      <div id="dialogo-extra" hidden>
+        <label for="dialogo-input" id="dialogo-input-rotulo"></label>
+        <input id="dialogo-input" type="text" autocomplete="off" autocapitalize="characters">
+      </div>
+      <div class="acoes-dialogo">
+        <button value="cancelar" class="botao botao-suave" id="dialogo-cancelar">Cancelar</button>
+        <button value="confirmar" class="botao botao-perigo" id="dialogo-confirmar">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="aviso" class="aviso" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <template id="tpl-cartao">
+    <li class="cartao">
+      <article>
+        <header class="cartao-topo">
+          <div class="cartao-dia" aria-hidden="true"><span class="cartao-dia-num"></span><span class="cartao-dia-mes"></span></div>
+          <div class="cartao-cab">
+            <h3 class="cartao-data"><time></time></h3>
+            <span class="selo"></span>
+          </div>
+        </header>
+        <ul class="cartao-tags" aria-label="Resumo"></ul>
+        <p class="cartao-contexto" hidden></p>
+        <p class="cartao-obs" hidden></p>
+        <div class="cartao-acoes">
+          <a class="botao botao-suave botao-pequeno" data-acao="editar">Editar</a>
+          <button type="button" class="botao botao-pequeno botao-perigo-texto" data-acao="apagar">Apagar</button>
+        </div>
+      </article>
+    </li>
+  </template>
+
+  <script src="js/model.js"></script>
+  <script src="js/auth-config.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
