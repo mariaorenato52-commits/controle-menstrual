@@ -34,7 +34,7 @@
     document.querySelector("#app-palco").hidden = false;
     gate.hidden = true;
     const appScript = document.createElement("script");
-    appScript.src = "js/app.js";
+    appScript.src = "js/app.js?v=20261117-home";
     appScript.onerror = () => { gate.hidden = false; falar("Não foi possível carregar o diário. Recarregue a página."); };
     document.body.append(appScript);
     const conta = document.querySelector("#conta-atual");

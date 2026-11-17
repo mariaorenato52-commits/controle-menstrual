@@ -6,8 +6,6 @@
   const repo = D.criarRepositorio(window.localStorage);
   const $ = (sel, el) => (el || document).querySelector(sel);
 
-  const RECENTES = 5;
-
   const ICONES_HUMOR = {
     Bem: "🙂", Feliz: "😄", Tranquila: "😌", Animada: "🤩", Carinhosa: "🥰", Cansada: "😴",
     Sensível: "🥺", Ansiosa: "😟", Irritada: "😠", Estressada: "😣", Triste: "😢", Instável: "🎢",
@@ -258,19 +256,37 @@
     const hoje = D.hojeISO();
     $("#hero-dia-semana").textContent = "DIÁRIO PRIVADO";
     $("#t-inicio").textContent = "Controle da Mi";
-    $("#resumo-inicio").textContent = todos.length
-      ? `${todos.length} ${todos.length === 1 ? "anotação" : "anotações"} registrada${todos.length === 1 ? "" : "s"} manualmente`
-      : "Anotações feitas manualmente, no seu tempo.";
+    $("#resumo-inicio").textContent = "Acompanhe os dias marcados manualmente.";
 
-    const temHoje = todos.some((r) => r.data === hoje);
-    $("#vazio-inicio").hidden = todos.length > 0;
-    $("#hoje-cta").hidden = todos.length === 0 || temHoje;
-    $("#titulo-recentes").hidden = todos.length === 0;
-    $("#ver-todas").hidden = todos.length <= RECENTES;
+    const marcados = new Set(todos
+      .filter((r) => r.menstruacao === "sim" || Boolean(r.respostas && r.respostas.menstrual_intensidade))
+      .map((r) => r.data));
+    const [ano, mes, dia] = hoje.split("-").map(Number);
+    const dias = Array.from({ length: 7 }, (_, i) => {
+      const data = D.hojeISO(new Date(ano, mes - 1, dia - 6 + i));
+      return { data, marcada: marcados.has(data) };
+    });
+    const totalMarcados = dias.filter((item) => item.marcada).length;
+    const anel = $("#anel-ciclo");
+    anel.style.setProperty("--arco-progresso", `${(totalMarcados / 7) * 100}%`);
+    anel.setAttribute("aria-label", `${totalMarcados} de 7 dias marcados como menstruais nos últimos sete dias`);
+    $("#ciclo-resumo").textContent = `${totalMarcados} de 7 dias`;
+    $("#ciclo-subtitulo").textContent = "marcados como menstruais nos últimos 7 dias";
 
-    const lista = $("#lista-inicio");
-    lista.replaceChildren();
-    for (const r of todos.slice(0, RECENTES)) lista.append(criarCartao(r));
+    const faixaDias = $("#ciclo-dias");
+    faixaDias.replaceChildren();
+    for (const item of dias) {
+      const dt = new Date(`${item.data}T12:00:00`);
+      const link = el("a", {
+        class: `ciclo-dia${item.marcada ? " ciclo-dia-marcado" : ""}${item.data === hoje ? " ciclo-dia-hoje" : ""}`,
+        href: `#/nova/${item.data}`,
+        "aria-label": `${formatarData(item.data)}${item.marcada ? ", marcada como dia menstrual" : ", sem marcação menstrual"}`,
+      });
+      link.append(el("span", { class: "ciclo-dia-semana" }, new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(dt).replace(".", "")));
+      link.append(el("span", { class: "ciclo-dia-numero" }, String(dt.getDate())));
+      if (item.marcada) link.append(el("span", { class: "ciclo-dia-ponto", "aria-hidden": "true" }));
+      faixaDias.append(link);
+    }
   }
 
   // ---------- Calendário manual ----------
