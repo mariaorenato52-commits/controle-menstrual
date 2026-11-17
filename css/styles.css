@@ -576,17 +576,24 @@ body.pagina-hoje, body.pagina-calendario {
 .faixa-destaque a { flex: none; padding: .7rem 1rem; border-radius: 999px; background: #803579; color: #fff; font-size: .88rem; font-weight: 700; text-decoration: none; }
 .modo-manual { display: flex; align-items: center; justify-content: center; gap: .5rem; width: fit-content; margin: 0 auto; padding: .45rem 1.1rem; border-radius: 999px; background: #00566a; color: #c8f4fb; font-size: .9rem; }
 .modo-ponto { width: 8px; height: 8px; border-radius: 50%; background: #79d9ee; }
-.pagina-hoje .vazio { display: grid; place-items: center; min-height: 62vh; padding: 1.25rem 0; margin: 0; background: transparent; border: 0; box-shadow: none; }
-.anel-diario { position: relative; display: grid; place-items: center; width: min(86vw, 520px); aspect-ratio: 1; border: clamp(17px, 3.2vw, 28px) solid #403e3d; border-radius: 50%; }
-.gota-diario { position: absolute; top: -8%; left: 29%; width: 42px; height: 62px; fill: #ef3841; stroke: none; }
-.anel-conteudo { width: min(82%, 350px); text-align: center; }
-.anel-conteudo h2 { margin: 0 auto .6rem; font-size: clamp(1.35rem, 3.6vw, 2rem); line-height: 1.35; }
+.ciclo-inicio { display: grid; justify-items: center; padding: 1rem 0 5rem; text-align: center; }
+.ciclo-inicio > h2 { margin: 0; font-size: 1.25rem; }
+.ciclo-inicio-explica { margin: .4rem 0 1.2rem; color: var(--muted); font-size: .9rem; }
+.anel-diario { position: relative; display: grid; place-items: center; width: min(82vw, 440px); aspect-ratio: 1; border-radius: 50%; padding: clamp(17px, 3.2vw, 28px); background: conic-gradient(from -90deg, #79d9ee var(--arco-progresso, 0%), #403e3d 0); }
+.anel-diario::before { position: absolute; content: ""; inset: clamp(17px, 3.2vw, 28px); border-radius: inherit; background: var(--bg); }
+.anel-conteudo { position: relative; z-index: 1; width: min(82%, 350px); text-align: center; }
+.anel-conteudo h3 { margin: 0 auto .6rem; font-size: clamp(1.35rem, 3.6vw, 2rem); line-height: 1.35; }
 .anel-conteudo p { margin: 0 auto 1rem; color: var(--muted); font-size: .92rem; }
 .anel-conteudo .botao { min-height: 48px; padding: .65rem 1.1rem; border-radius: 999px; font-size: .95rem; }
 .anel-conteudo .botao span { margin-left: .3rem; font-size: 1.25rem; line-height: 1; }
-.pagina-hoje .cta-hoje { border: 1px solid var(--border); background: var(--surface); }
-.pagina-hoje .secao-titulo { margin-top: 1.25rem; }
-.pagina-hoje .cartao article { border: 1px solid var(--border); background: var(--surface); }
+.ciclo-dias { display: grid; grid-template-columns: repeat(7, minmax(38px, 1fr)); gap: .45rem; width: min(100%, 520px); margin: 1.4rem auto .8rem; }
+.ciclo-dia { position: relative; display: grid; justify-items: center; gap: .2rem; padding: .5rem .2rem .65rem; border-radius: 14px; color: var(--muted); text-decoration: none; }
+.ciclo-dia-hoje { outline: 2px solid var(--primary); color: var(--text); }
+.ciclo-dia-marcado { background: #6e000b; color: #fff; }
+.ciclo-dia-semana { font-size: .72rem; text-transform: capitalize; }
+.ciclo-dia-numero { font-size: 1.05rem; font-weight: 700; }
+.ciclo-dia-ponto { position: absolute; bottom: .28rem; width: 6px; height: 6px; border-radius: 50%; background: #ef3841; }
+.ciclo-link-anotacoes { margin-top: .6rem; color: var(--primary); font-weight: 700; text-decoration: none; }
 .pagina-hoje .aba-mais { background: var(--primary); color: var(--primary-text); }
 .pagina-hoje .aba[aria-current="page"] { color: var(--primary); }
 
@@ -679,12 +686,11 @@ body.pagina-hoje, body.pagina-calendario {
   .faixa-destaque { min-height: 82px; padding: .85rem 1rem; margin-right: -16px; margin-left: -16px; }
   .faixa-destaque p { max-width: 58%; font-size: .95rem; }
   .faixa-destaque a { padding: .62rem .8rem; font-size: .78rem; }
-  .pagina-hoje .vazio { min-height: 55vh; }
+  .anel-diario { width: min(82vw, 360px); }
   .analise-stat { min-height: 106px; padding: 14px; gap: 14px; }
   .analise-anel { width: 68px; height: 68px; flex-basis: 68px; border-width: 8px; }
   .analise-stat-titulo { font-size: .82rem; }
   .analise-stat-corpo strong { font-size: 1.25rem; }
-  .anel-diario { width: min(86vw, 390px); }
   .anel-conteudo { width: 82%; }
 }
 
