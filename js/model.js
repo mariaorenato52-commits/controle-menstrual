@@ -181,16 +181,9 @@
     let tamanhoRespostas = 0;
     try { tamanhoRespostas = JSON.stringify(reg.respostas).length; } catch (_) { tamanhoRespostas = 100001; }
     if (tamanhoRespostas > 100000) erros.respostas = "As respostas excedem o limite de armazenamento.";
-    for (const [chave, valor] of Object.entries(reg.respostas || {})) {
-      if (!/^[a-z_]{1,40}$/.test(chave)) { erros.respostas = "Campo de resposta inválido."; break; }
-      if (typeof valor === "number" && (!Number.isFinite(valor) || valor < 0 || valor > 500)) erros.respostas = "Informe um número válido entre 0 e 500.";
-      else if (Array.isArray(valor) && (valor.length > 100 || valor.some((v) => typeof v !== "string" || v.length > 120))) erros.respostas = "Uma das opções selecionadas é inválida.";
-      else if (typeof valor === "string" && valor.length > 3000) erros.respostas = "A nota diária pode ter até 3.000 caracteres.";
-      else if (CAMPOS_DURACAO.has(chave) && valor && typeof valor === "object" && !Array.isArray(valor) &&
-        (!Number.isInteger(valor.h) || valor.h < 0 || valor.h > 24 || !Number.isInteger(valor.m) || valor.m < 0 || valor.m > 59)) {
-        erros[chave] = "Informe horas inteiras entre 0 e 24 e minutos entre 0 e 59.";
-      }
-    }
+    // Respostas de categorias são registros livres (texto, opções e medidas).
+    // Não rejeite valores por tipo/formato; limite somente o tamanho total para
+    // proteger o armazenamento local do navegador.
 
     const temConteudo =
       reg.humor ||
