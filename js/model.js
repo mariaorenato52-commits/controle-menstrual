@@ -65,6 +65,15 @@
     sintomasOutros: 200,
   };
 
+  const CAMPOS_DURACAO = new Set(["sono_minutos", "meditacao_minutos"]);
+
+  function normalizarParteDuracao(valor) {
+    if (valor === undefined || valor === null || valor === "") return 0;
+    if (typeof valor === "number") return valor;
+    if (typeof valor === "string" && valor.trim()) return Number(valor);
+    return NaN;
+  }
+
   // ---------- utilidades de data (sempre no fuso local) ----------
 
   function hojeISO(agora) {
@@ -101,6 +110,19 @@
     const sintomas = Array.isArray(b.sintomas)
       ? Array.from(new Set(b.sintomas.filter((s) => typeof s === "string")))
       : [];
+    const respostas = b.respostas && typeof b.respostas === "object" && !Array.isArray(b.respostas)
+      ? { ...b.respostas }
+      : {};
+    for (const chave of CAMPOS_DURACAO) {
+      const duracao = respostas[chave];
+      if (duracao && typeof duracao === "object" && !Array.isArray(duracao)) {
+        respostas[chave] = {
+          h: normalizarParteDuracao(duracao.h ?? duracao.horas),
+          m: normalizarParteDuracao(duracao.m ?? duracao.minutos),
+        };
+      }
+    }
+
     return {
       id: typeof b.id === "string" && b.id ? b.id : null,
       schema_version: SCHEMA_VERSION,
@@ -113,7 +135,7 @@
       sintomasOutros: texto(b.sintomasOutros),
       contexto: texto(b.contexto),
       observacoes: texto(b.observacoes),
-      respostas: b.respostas && typeof b.respostas === "object" && !Array.isArray(b.respostas) ? b.respostas : {},
+      respostas,
       criadoEm: typeof b.criadoEm === "string" ? b.criadoEm : null,
       atualizadoEm: typeof b.atualizadoEm === "string" ? b.atualizadoEm : null,
     };
@@ -164,7 +186,12 @@
       if (typeof valor === "number" && (!Number.isFinite(valor) || valor < 0 || valor > 500)) erros.respostas = "Informe um número válido entre 0 e 500.";
       else if (Array.isArray(valor) && (valor.length > 100 || valor.some((v) => typeof v !== "string" || v.length > 120))) erros.respostas = "Uma das opções selecionadas é inválida.";
       else if (typeof valor === "string" && valor.length > 3000) erros.respostas = "A nota diária pode ter até 3.000 caracteres.";
-      else if (valor && typeof valor === "object" && (!Number.isInteger(valor.h) || valor.h < 0 || valor.h > 24 || !Number.isInteger(valor.m) || valor.m < 0 || valor.m > 59)) erros.respostas = "Informe a duração em horas e minutos válidos.";
+      else if (CAMPOS_DURACAO.has(chave) && valor && typeof valor === "object" && !Array.isArray(valor) &&
+        (!Number.isInteger(valor.h) || valor.h < 0 || valor.h > 24 || !Number.isInteger(valor.m) || valor.m < 0 || valor.m > 59)) {
+        erros[chave] = "Informe horas inteiras entre 0 e 24 e minutos entre 0 e 59.";
+      } else if (valor && typeof valor === "object" && !Array.isArray(valor)) {
+        erros.respostas = "Formato de resposta inválido.";
+      }
     }
 
     const temConteudo =

@@ -421,7 +421,7 @@
         g.hidden = false;
         primeiro = primeiro || g;
       }
-      const alvo = $(`#r-${campo}`) || $(`#r-${campo}-grupo input`);
+      const alvo = $(`#r-${campo}`) || $(`#r-${campo}-grupo input`) || $(`[name="resposta:${campo}:h"]`);
       if (alvo) {
         alvo.setAttribute("aria-invalid", "true");
         primeiro = primeiro || alvo;
@@ -787,10 +787,11 @@
         bloco.append(campo);
       } else if (tipo === "duration") {
         const linha = el("div", { class: "duracao-linha" });
-        const inputH = el("input", { type: "number", name: `resposta:${chave}:h`, min: "0", max: "24", inputmode: "numeric", placeholder: "00", "aria-label": `${titulo}: horas` });
-        const inputM = el("input", { type: "number", name: `resposta:${chave}:m`, min: "0", max: "59", inputmode: "numeric", placeholder: "00", "aria-label": `${titulo}: minutos` });
+        const inputH = el("input", { type: "number", name: `resposta:${chave}:h`, min: "0", max: "24", step: "1", inputmode: "numeric", placeholder: "00", "aria-label": `${titulo}: horas` });
+        const inputM = el("input", { type: "number", name: `resposta:${chave}:m`, min: "0", max: "59", step: "1", inputmode: "numeric", placeholder: "00", "aria-label": `${titulo}: minutos` });
         linha.append(inputH, el("span", null, "h"), inputM, el("span", null, "min"));
         bloco.append(linha);
+        bloco.append(el("p", { class: "erro", id: `e-${chave}` }));
       } else {
         const grade = el("div", { class: "tiles" });
         opcoes.forEach((rotulo) => grade.append(tile(tipo, `resposta:${chave}`, rotulo, icone, rotulo)));
@@ -873,9 +874,16 @@
     const respostas = {};
     for (const [key, , , , tipo] of CATEGORIAS) {
       if (tipo === "duration") {
-        const h = Number($(`[name="resposta:${key}:h"]`).value || 0);
-        const m = Number($(`[name="resposta:${key}:m"]`).value || 0);
-        if (h || m) respostas[key] = { h, m };
+        const campoH = $(`[name="resposta:${key}:h"]`);
+        const campoM = $(`[name="resposta:${key}:m"]`);
+        const textoH = campoH.value.trim();
+        const textoM = campoM.value.trim();
+        if (textoH || textoM || campoH.validity.badInput || campoM.validity.badInput) {
+          respostas[key] = {
+            h: campoH.validity.badInput ? NaN : (textoH === "" ? 0 : Number(textoH)),
+            m: campoM.validity.badInput ? NaN : (textoM === "" ? 0 : Number(textoM)),
+          };
+        }
       } else if (tipo === "number") {
         const v = $(`[name="resposta:${key}"]`).value;
         if (v !== "") respostas[key] = Number(v);
