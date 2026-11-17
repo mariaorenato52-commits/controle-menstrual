@@ -178,12 +178,9 @@
       }
     }
 
-    let tamanhoRespostas = 0;
-    try { tamanhoRespostas = JSON.stringify(reg.respostas).length; } catch (_) { tamanhoRespostas = 100001; }
-    if (tamanhoRespostas > 100000) erros.respostas = "As respostas excedem o limite de armazenamento.";
     // Respostas de categorias são registros livres (texto, opções e medidas).
-    // Não rejeite valores por tipo/formato; limite somente o tamanho total para
-    // proteger o armazenamento local do navegador.
+    // A validação não impõe limites; o navegador ainda pode aplicar sua própria
+    // quota ao armazenamento local.
 
     const temConteudo =
       reg.humor ||
