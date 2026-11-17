@@ -257,7 +257,7 @@
     const todos = D.ordenar(lerTodos());
     const hoje = D.hojeISO();
     $("#hero-dia-semana").textContent = "DIÁRIO PRIVADO";
-    $("#t-inicio").textContent = "Seu diário";
+    $("#t-inicio").textContent = "Controle da Mi";
     $("#resumo-inicio").textContent = todos.length
       ? `${todos.length} ${todos.length === 1 ? "anotação" : "anotações"} registrada${todos.length === 1 ? "" : "s"} manualmente`
       : "Anotações feitas manualmente, no seu tempo.";
@@ -590,7 +590,7 @@
     else if (rota.view === "form") renderForm(rota.id, rota.data);
     else if (rota.view === "dados") renderDados();
 
-    const titulos = { inicio: "Diário", lista: "Anotações · Diário", calendario: "Calendário · Diário", analise: "Análise · Diário", form: "Anotação · Diário", dados: "Dados · Diário" };
+    const titulos = { inicio: "Controle da Mi", lista: "Anotações · Controle da Mi", calendario: "Calendário · Controle da Mi", analise: "Análise · Controle da Mi", form: "Anotação · Controle da Mi", dados: "Dados · Controle da Mi" };
     document.title = titulos[rota.view];
 
     if (focar && ultimaView !== null) {
