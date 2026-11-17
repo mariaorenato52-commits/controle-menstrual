@@ -13,7 +13,7 @@
   <meta name="theme-color" content="#151418" media="(prefers-color-scheme: dark)">
   <title>Diário</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=20261117-home">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -90,31 +90,19 @@
         </div>
         <div class="modo-manual"><span class="modo-ponto" aria-hidden="true"></span> Modo: diário manual</div>
 
-        <div id="hoje-cta" class="cta-hoje" hidden>
-          <div class="cta-icone" aria-hidden="true">✎</div>
-          <div>
-            <h2>Nada anotado hoje</h2>
-            <p>Humor, energia, sintomas ou algo que ela contou.</p>
-          </div>
-          <a class="botao botao-primario" href="#/nova">Registrar hoje</a>
-        </div>
-
-        <div id="vazio-inicio" class="vazio" hidden>
-          <div class="anel-diario">
-            <svg class="gota-diario" aria-hidden="true" viewBox="0 0 40 60"><path d="M20 2C16 15 3 28 3 40a17 17 0 0 0 34 0C37 28 24 15 20 2Z"/></svg>
+        <section class="ciclo-inicio" aria-labelledby="ciclo-inicio-titulo">
+          <h2 id="ciclo-inicio-titulo">Seu ciclo atual</h2>
+          <p class="ciclo-inicio-explica">Marque manualmente os dias de menstruação. Não fazemos previsões.</p>
+          <div class="anel-diario" id="anel-ciclo" role="img" aria-label="Nenhum dia menstrual marcado nos últimos sete dias">
             <div class="anel-conteudo">
-              <h2>Seu diário começa aqui</h2>
-              <p>Anote algo que ela contou ou uma observação sua.</p>
-              <a class="botao botao-primario" href="#/nova">Adicionar anotação <span aria-hidden="true">＋</span></a>
+              <h3 id="ciclo-resumo">Nenhum dia marcado</h3>
+              <p id="ciclo-subtitulo">Dias menstruais registrados nos últimos 7 dias</p>
+              <a class="botao botao-primario" href="#/nova">Registrar dia <span aria-hidden="true">＋</span></a>
             </div>
           </div>
-        </div>
-
-        <div class="secao-titulo" id="titulo-recentes">
-          <h2>Recentes</h2>
-          <a href="#/lista" id="ver-todas" hidden>Ver todas</a>
-        </div>
-        <ol id="lista-inicio" class="cartoes" aria-labelledby="titulo-recentes"></ol>
+          <div id="ciclo-dias" class="ciclo-dias" aria-label="Últimos sete dias"></div>
+          <a class="ciclo-link-anotacoes" href="#/lista">Ver anotações salvas</a>
+        </section>
       </section>
 
       <!-- ============ CALENDÁRIO ============ -->
