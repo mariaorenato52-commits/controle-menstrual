@@ -189,8 +189,6 @@
       else if (CAMPOS_DURACAO.has(chave) && valor && typeof valor === "object" && !Array.isArray(valor) &&
         (!Number.isInteger(valor.h) || valor.h < 0 || valor.h > 24 || !Number.isInteger(valor.m) || valor.m < 0 || valor.m > 59)) {
         erros[chave] = "Informe horas inteiras entre 0 e 24 e minutos entre 0 e 59.";
-      } else if (valor && typeof valor === "object" && !Array.isArray(valor)) {
-        erros.respostas = "Formato de resposta inválido.";
       }
     }
 
